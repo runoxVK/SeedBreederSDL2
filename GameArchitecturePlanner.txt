@@ -1,0 +1,96 @@
+FarmingGame/
+├── src/
+│   ├── main.c        ← entry point, game loop
+│   ├── tile.h        ← tile data definition
+│   ├── tile.c        ← tile logic
+│   ├── farm.h        ← farm grid definition
+│   ├── farm.c        ← farm logic
+│   └── renderer.h/c  ← all drawing code (later)
+├── farming_game.exe
+
+.h = Headerfiles: declares that something exists (table of contents type thing)
+.c source file
+
+Other .c files will include the header file
+
+
+Data Structures
+
+TILE:
+    - state        → EMPTY | PLANTED | WATERED | GROWN
+    - growth       → 0 to 100
+    - watered      → yes or no
+    - water_count  → how many times watered total
+
+FARM:
+    - tiles        → a 10x8 grid of TILEs
+    - money        → how much gold the player has
+    - seeds        → how many seeds in inventory
+    - day          → what day it is
+
+
+Functions
+
+TILE FUNCTIONS:
+    tile_init(tile)     → reset tile to empty/zero
+    tile_plant(tile)    → if EMPTY → set to PLANTED
+    tile_water(tile)    → if PLANTED or WATERED → set to WATERED, increment water_count
+    tile_update(tile)   → if WATERED → grow by 25, reset to PLANTED
+                          if growth >= 100 → set to GROWN
+
+FARM FUNCTIONS:
+    farm_init(farm)     → set money/seeds/day, call tile_init on every tile in grid
+    farm_update(farm)   → advance day, call tile_update on every tile in grid
+    farm_harvest(farm, row, col) → if tile is GROWN → set to EMPTY, add $25 to money
+
+
+File Structure
+
+
+tile.h   → defines what a TILE looks like, declares tile functions
+tile.c   → implements tile functions
+
+farm.h   → defines what a FARM looks like, declares farm functions
+farm.c   → implements farm functions (uses tile functions)
+
+main.c   → creates the window, runs the game loop, owns the FARM
+
+
+The Game Loop (runs every frame)
+
+LOOP forever:
+    1. HANDLE INPUT
+           did player click a tile? → plant / water / harvest
+           did player press next day? → call farm_update
+           did player close window? → exit loop
+
+    2. UPDATE STATE
+           (state changes happen in response to input above)
+
+    3. DRAW
+           clear screen
+           for every tile in grid → draw tile based on its state
+           draw UI (money, seeds, day)
+           present frame
+
+How Files Talk To Each Other
+
+```
+main.c
+  └── includes farm.h        (needs to know what a Farm is)
+        └── farm.h includes tile.h   (Farm contains Tiles)
+
+farm.c
+  └── includes farm.h        (implements farm functions)
+  └── calls tile functions    (tile_init, tile_update etc.)
+
+tile.c
+  └── includes tile.h        (implements tile functions)
+  └── knows nothing about Farm or SDL — fully self contained
+
+
+struct    → a bundle of related data (like a class with no methods)
+enum      → a named set of options (EMPTY=0, PLANTED=1, WATERED=2, GROWN=3)
+pointer   → stores the address of something so a function can modify it
+#define   → a named constant (GRID_COLS = 10, TILE_SIZE = 64)
+#include  → pulls in a header so this file knows what exists elsewhere
