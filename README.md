@@ -1,0 +1,1 @@
+Seed Breeder is an SDL2, C project I made to learn C. Its a simple farming game where you spend days planting crops and watering them. You can then sell them upon harvest in the shop. Additionally, adjacent seeds have a chance to breed NEW hybrid seeds that dynamically get their name and look so you can keep discovering new seeds. I learnt a lot.
